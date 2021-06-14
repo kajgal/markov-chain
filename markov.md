@@ -3,7 +3,7 @@ Tematem projektu, który wybrałem są Łańcuchy Markowa. Zdecydowałem się zg
 ## Projekt - Wykonanie
 Projekt został wykonany w formie strony internetowej. Całość została zrealizowana za pomocą HTML, CSS oraz JavaScript.
 ## Projekt - Działanie
-Przede wszystkim zależało mi na tym, żeby w stosunkowo interesujący sposób zestawić ze sobą matematyczny rezultat z prawdziwym przypadkiem, dlatego aplikacja przede wszystkim opiera się na przeprowadzeniu symulacji wędrówki bierki szachowej po pustej szachownicy, do momentu aż nie wróci do początkowego stanu.
+Przede wszystkim zależało mi na tym, żeby w stosunkowo interesujący sposób zestawić ze sobą matematyczny rezultat z prawdziwym przypadkiem, dlatego aplikacja przede wszystkim opiera się na przeprowadzeniu symulacji wędrówki bierki szachowej po pustej szachownicy do momentu aż nie wróci do początkowego stanu.
 
 Funkcjonalności:
 
@@ -23,7 +23,7 @@ Przycisk "Number of moves" narysuje na szachownicy liczbę dostępnych ruchów z
 
 Przycisk "Stationary distribution" narysuje na szachownicy rozkład stacjonarny (dla każdego stanu), czyli pojawi ułamek odpowiadający wartości rozkładu stacjonarnego dla danego stanu.
 
-Przycisk start simulation uruchomi symulację gdzie pozycją startową będzie kwadrat, na którym stoi bierka. W panelu symulacji zliczane będą kolejne ruchy wykonane przez bierkę, oprócz tego możemy w każdej chwili manipulować prędkością przemieszczeania się bierki suwakiem (min. opóźnienie 1ms, maksymalne 5000 ms). Kwadrat początkowy przez cały czas trwania symulacji będzie podświetlony na czerwony kolor, zaś kwadrat do którego bierka się przemieszcza będzie otrzymywał żołtą ramkę. Symulacja trwa dopóki bierka nie wróci do swojego początkowego stanu.
+Przycisk "Start simulation" uruchomi symulację gdzie pozycją startową będzie kwadrat, na którym stoi bierka. W panelu symulacji zliczane będą kolejne ruchy wykonane przez bierkę, oprócz tego możemy w każdej chwili manipulować prędkością przemieszczeania się bierki suwakiem (min. opóźnienie 1ms, maksymalne 5000 ms). Kwadrat początkowy przez cały czas trwania symulacji będzie podświetlony na czerwony kolor, zaś kwadrat do którego bierka się przemieszcza będzie otrzymywał żołtą ramkę. Symulacja trwa dopóki bierka nie wróci do swojego początkowego stanu.
 W konsoli programistycznej (F12) można podglądać informacje, które są w danej chwili przetwarzane/obliczane.
 ## Projekt - podłoże teoretyczne
 Niezbędnym składnikiem do rozpoczęcia jakichkolwiek rozważań przy temacie Łańcuchów Markowa jest przestrzeń stanów. Niezależnie od tego nad czym konkretnie będziemy się
@@ -37,7 +37,8 @@ Kolejnym składnikiem, bez którego rozważania nie miałyby sensu jest funkcja 
 prawdopodobieństwo przejścia z jednego stanu do drugiego. W zależności od tego nad czym konkretnie będziemy się zastanawiać, macierz przejścia będzie inna.
 Gdybyśmy chcieli wyznaczyć taką funkcję przejścia prawdopodobieństwa, zaczęlibyśmy rysować z każdego kwadratu (każdego stanu) strzałki do innych kwadratów, do których mamy
 możliwość przemieszczenia się. W zależności od tego jaką bierką byśmy się poruszali, strzałki byłyby inaczej kierowane, jednak koniec końcow na pewno wyszedłby nam jeden wielki
-bazgroł. Dlatego czytelniejszą formą byłaby na pewno macierz przejścia.
+bazgroł. Dlatego czytelniejszą formą byłaby na pewno macierz przejścia, przy czym musiałaby ona być rozmiarów 64 x 64, a więc całkiem spora. 
+Przy typowym podejściu do określania czasu powrotu do stanu, macierz przejścia byłaby przydatna, ponieważ to za jej pomocą średni czas zostałby policzony - w projekcie jednak korzystam z innego podejścia.
 
 ![Funkcja przejścia](./article/probability_function.png)
 
@@ -60,9 +61,13 @@ Krótko mówiąc, układamy bierkę na każdym kwadracie, sprawdzamy ile ruchów
 Realizację tego etapu można uzyskać poprzez kliknięcie przycisku "Number of moves" w aplikacji.
 
 Następnym krokiem jest zauważenie kluczowej zależności dla szachowej przestrzeni stanów:
+
 Jeśli wszystkie skoczki wykonują jeden, losowy ruch, wtedy średnio liczba skoczków, które znajdą się na danym polu jest równa liczbie, która znajduje się na danym kwadracie na powyższym rysunku.
+
 Przeanalizujmy to stwierdzenie na podstawie pól C7 i E8.
-Wszystkie skoczki znajdujące się na polach przmieszczają się losowo. Na C7 jest 6 skoczków, zaś na E8 są cztery. Każdy skoczek znajdujący się na polu C7 ma 1/6 szansy na przeskoczenie na pole E8 (zgodnie z tym co zostało wcześniej powiedziane). Tak samo każdy z czterech skoczków stojących na E8 ma 1/4 szansy na znalezienie się na polu C7 po wykonaniu ruchu.
+
+Wszystkie skoczki znajdujące się na polach przemieszczają się losowo. Na C7 jest sześć skoczków, zaś na E8 są cztery. Każdy skoczek znajdujący się na polu C7 ma 1/6 szansy na przeskoczenie na pole E8 (zgodnie z tym co zostało wcześniej powiedziane). Tak samo każdy z czterech skoczków stojących na E8 ma 1/4 szansy na znalezienie się na polu C7 po wykonaniu ruchu.
+
 W takim wypadku można powiedzieć, że średnio jeden skoczek z C7 powinien przemieścić się na E8 i tak samo średnio jeden z E8 powinien przemieścić się na C7. I w takim przypadku skoczki zamieniają się miejscami więc tak naprawdę sytuacja na szachownicy pozostaje taka sama.
 Sytuacja taka zachodzi między wszystkimi kwadratami, które dzieli jeden ruch skoczka.
 
@@ -84,7 +89,17 @@ Liczba, która wyszła to średni czas powrotu skoczka do swojego początkowego 
 
 Aplikacja pozwala na ustawienie dowolnej bierki w dowolnym miejscu, sprawdzenie ile średnio ruchów zająłby powrót, na podstawie rozkładu stacjonarnego można się spodziewać, które pola są częściej okupowane i jak powinien zmieniać się czas powrotu tj. do których pól średnio szybciej się wróci niż do innych.
 
-Słowo średnio jest kluczowe dla całego tego projektu :).
+## Goniec
+W przypadku Gońca należy zwrócić uwagę, że jako przestrzeń stanów traktuje się 32 pola, po których goniec może się poruszać. W takim ujęciu wszystko działa w sposób analogiczny, a jako sumę gońców ze wszystkich pól bierzę się połowę.
+
+## Podłoże teoretyczne - mniej skrótowo, bardziej dowodowo
+W początkowej fazie realizacji projektu zdałem sobie sprawę, że wziąłem niejako na wiarę dwie rzeczy:
+
+a) Po pierwsze to, że w celu uzyskania rozkładu stacjonarnego możemy skorzystać z liczby ruchów z danego pola i po prostu podzielić ją przez sumę tych ruchów ze wszystkich pól. Tłumaczenie, które odnalazłem w filmie, który był głównem źródłem inspiracji do stworzenia projektu, trafiło do mnie i nie zastanawiałem się nad tym głębiej dlaczego w tak prosty sposób można uzyskać rozkład stacjonarny skoro często jest to zdecydowanie bardziej wymagający proces - a tutaj prawie w ogóle nie ma liczenia.
+
+b) Po drugie to, że w celu uzyskania średniego oczekiwanego czasu powrotu do stanu początkowego, można skorzystać z twierdzenia, że wynosi on 1 przez wartość rozkładu stacjonarnego w stanie dla, którego to liczymy.
+
+Po czasie stwierdziłem jednak, że chciałbym zobaczyć dlaczego oba zjawiska mają rację bytu i zaczęło mnie to po prostu ciekawić. W polskich źródłach nie mogłem znaleźć satysfakcjonujących mnie odpowiedzi, paradoksalnie były one dla mnie mniej zrozumiałe niż te zagraniczne, ale po czasie spędzonym na czytaniu miałem pewność, że te dwie rzeczy, o których napisałem rzeczywiście mają poparcie w matematyce - nie rozumiałem jeszcze tylko dlaczego. Z pełną świadomością, że prawdopodobnie tak czy siak tego nie zrozumiem, szukałem dalej.
 
 Inspiracją dla stworzenia całego projektu jest filmik na który natknąłem się na YouTube:
 
@@ -93,3 +108,17 @@ https://www.youtube.com/watch?v=63HHmjlh794&t=605s
 umieszczony na kanale PBS Infinite Series
 
 Grafiki, które zostały wykorzystane w tym dokumencie pochodzą z powyższego materiału, który był punktem wyjścia dla całej wiedzy nabywanej dalej w celu zgłębienia zagadnienia.
+
+Materiały i źródła pomocnicze:
+
+https://people.math.wisc.edu/~valko/courses/331/MC3.pdf
+
+https://math.stackexchange.com/questions/1129060/expected-first-return-time-of-markov-chain
+
+http://tomasz.home.amu.edu.pl/wrp/mat10.pdf
+
+http://wazniak.mimuw.edu.pl/index.php?title=Rachunek_prawdopodobie%C5%84stwa_i_statystyka/Wyk%C5%82ad_10:_%C5%81a%C5%84cuchy_Markowa#Ergodyczno.C5.9B.C4.87
+
+http://statystyka.rezolwenta.eu.org/Materialy/Markowa.pdf
+
+Materiały z wykładu
