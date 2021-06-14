@@ -99,7 +99,22 @@ a) Po pierwsze to, że w celu uzyskania rozkładu stacjonarnego możemy skorzyst
 
 b) Po drugie to, że w celu uzyskania średniego oczekiwanego czasu powrotu do stanu początkowego, można skorzystać z twierdzenia, że wynosi on 1 przez wartość rozkładu stacjonarnego w stanie dla, którego to liczymy.
 
-Po czasie stwierdziłem jednak, że chciałbym zobaczyć dlaczego oba zjawiska mają rację bytu i zaczęło mnie to po prostu ciekawić. W polskich źródłach nie mogłem znaleźć satysfakcjonujących mnie odpowiedzi, paradoksalnie były one dla mnie mniej zrozumiałe niż te zagraniczne, ale po czasie spędzonym na czytaniu miałem pewność, że te dwie rzeczy, o których napisałem rzeczywiście mają poparcie w matematyce - nie rozumiałem jeszcze tylko dlaczego. Z pełną świadomością, że prawdopodobnie tak czy siak tego nie zrozumiem, szukałem dalej.
+Po czasie stwierdziłem jednak, że chciałbym zobaczyć dlaczego oba zjawiska można w tak sprytny sposób wykorzystać i jaka matematyka za tym stoi.
+
+a) Podpunkt a jest prawdą, ponieważ sytuację, z którą ma się doczynienia w przypaku mojego projektu można potraktować jako błądzenie klasyczne (spacer losowy) po grafie G bez wierzchołków izolowanych, w którym cząstka (bierka szachowa) przemieszcza się do jednego z sąsiadów wierzchołka (kwadratu na który może wykonać legalny ruch) z jednakowym prawdopodobieństwem (że tak jest ustaliliśmy już wcześniej). Wszystko znajduje idealne odzwierciedlenie w przypadku szachownicy i wędrującej po niej bierki. Temu procesowi odpowiada łańcuch Markowa o zbiorze stanów V(G) (64 kwadraty) gdzie ja dowolnej krawędzi ij, prawdopodbieństwo przejścia ze stanu i do j wynosi 1 przez stopień wierzchołka i (liczba kwadratów na które możemy wykonać legalny ruch z i).
+
+Błądzenie na grafie G jest łańcuchem nieprzywiedlnym wtedy i tylko wtedy gdy G jest spójny. Błądzenie na grafie spójnym G jest łańcuchem niekresowym wtedy i tylko wtedy gdy G nie jest dwudzielny.
+
+W takim przypadku wektor ( deg(a1) / 2*E(G), deg(a2) / 2*E(G), ... ) jest rozkładem stacjonarnym dla błądzenia na grafie G.
+
+Dlatego w ten sposób, można szybko przejść od liczby możliwych bierek na polu do rozkładu stacjonarnego, ponieważ teraz traktujemy to po prostu w ten sposób (tak to jest zrealizowane w kodzie), że dla każdego pola bierzemy liczbę ruchów możliwych z tego pola (stopień wierzchołka) i dzielimy przez sumę wszystkich ruchów ze wszystkich pól (ta suma odpowiada 2 * E(G), ponieważ jeżeli możemy skoczyć z jednego pola na drugie to możemy z drugiego na pierwsze i w ten sposób podwójnie zliczamy, gdybym chciał obliczyć liczbę krawędzi w takim grafie to po prostu podzieliłbym tę sumę na dwa).
+
+W ten sposób, można wyznaczyć rozkład stacjonarny zamiast wykonywać rachunki na macierzy przejścia, która byłaby rozmiarów 64 na 64.
+
+http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp12_lancuchy_Markowa.pdf
+http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp13_lancuchy_Markowa_cd_opracowanie.pdf
+
+b) 
 
 Inspiracją dla stworzenia całego projektu jest filmik na który natknąłem się na YouTube:
 
