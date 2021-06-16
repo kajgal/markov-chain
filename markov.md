@@ -33,11 +33,9 @@ zastanawiać, musimy ją określic. W przypadku tematyki mojego projektu, przest
 
 Każdy kwadrat reprezentuje jeden z 64 stanów.
 
-Kolejnym składnikiem, bez którego rozważania nie miałyby sensu jest funkcja przejścia albo macierz przejścia, z której możemy odczytać
+Kolejnym składnikiem, bez którego rozważania nie miałyby sensu jest macierz przejścia albo jakaś inna forma reprezentacji przestrzeni stanów i prawdopodobieństw przejścia pomiędzy nimi, z której możemy odczytać
 prawdopodobieństwo przejścia z jednego stanu do drugiego. W zależności od tego nad czym konkretnie będziemy się zastanawiać, macierz przejścia będzie inna.
-Gdybyśmy chcieli wyznaczyć taką funkcję przejścia prawdopodobieństwa, zaczęlibyśmy rysować z każdego kwadratu (każdego stanu) strzałki do innych kwadratów, do których mamy
-możliwość przemieszczenia się. W zależności od tego jaką bierką byśmy się poruszali, strzałki byłyby inaczej kierowane, jednak koniec końcow na pewno wyszedłby nam jeden wielki
-bazgroł. Dlatego czytelniejszą formą byłaby na pewno macierz przejścia, przy czym musiałaby ona być rozmiarów 64 x 64, a więc całkiem spora. 
+Gdybyśmy chcieli wyznaczyć w graficzny sposób prawdopodobieństwa przejścia pomiędzy stanami, zaczęlibyśmy rysować z każdego kwadratu (każdego stanu) strzałki do innych kwadratów, do których mamy możliwość przemieszczenia się. W zależności od tego jaką bierką byśmy się poruszali, strzałki byłyby inaczej kierowane, jednak koniec końcow na pewno wyszedłby nam jeden wielki bazgroł. Dlatego czytelniejszą formą byłaby na pewno macierz przejścia, przy czym musiałaby ona być rozmiarów 64 x 64, a więc całkiem spora. 
 Przy typowym podejściu do określania czasu powrotu do stanu, macierz przejścia byłaby przydatna, ponieważ to za jej pomocą średni czas zostałby policzony - w projekcie jednak korzystam z innego podejścia.
 
 ![Funkcja przejścia](./article/probability_function.png)
@@ -93,24 +91,21 @@ Aplikacja pozwala na ustawienie dowolnej bierki w dowolnym miejscu, sprawdzenie 
 W przypadku Gońca należy zwrócić uwagę, że jako przestrzeń stanów traktuje się 32 pola, po których goniec może się poruszać. W takim ujęciu wszystko działa w sposób analogiczny, a jako sumę gońców ze wszystkich pól bierzę się połowę.
 
 ## Podłoże teoretyczne - mniej skrótowo, bardziej dowodowo
-W początkowej fazie realizacji projektu zdałem sobie sprawę, że wziąłem niejako na wiarę dwie rzeczy:
+a) Dlaczego można w tak prosty sposób przejść od liczby dozwolonych ruchów z pola do rozkładu stacjonarnego
 
-a) Po pierwsze to, że w celu uzyskania rozkładu stacjonarnego możemy skorzystać z liczby ruchów z danego pola i po prostu podzielić ją przez sumę tych ruchów ze wszystkich pól. Tłumaczenie, które odnalazłem w filmie, który był głównem źródłem inspiracji do stworzenia projektu, trafiło do mnie i nie zastanawiałem się nad tym głębiej dlaczego w tak prosty sposób można uzyskać rozkład stacjonarny skoro często jest to zdecydowanie bardziej wymagający proces - a tutaj prawie w ogóle nie ma liczenia.
+Problem bierki wędrującej po szachownicy jest tak naprawdę błądzeniem klasycznym po grafie. Cząstka czyli nasza bierka przemieszcza się do jednego z sąsiadów czyli pól na które może wykonać legalny ruch, z jednakowym prawdopodobieństwem. Temu procesowi odpowiada łańcuch Markowa o zbiorze stanów V(G) gdzie dla dowolonej krawędzi ij należącej do zbioru krawędzi tego grafu mamy p(ij) = 1 / deg(i) czyli 1 przez stopień wierzchołka grafu. Graf nie ma wierzchołków izolowanych oraz ma co najmniej dwa wierzchołki. Co więcej, błądzenie po grafie w tym przypadku zawsze będzie łańcuchem nieprzywiedlnym (Łańcuch Markowa nazywamy nieprzywiedlnym, jeśli wszystkie stany komunikują się ze sobą, czyli możemy przejść od każdego stanu do każdego stanu), a oprócz tego będzie łańcuchem nieokresowym w przypadku wędrówki każdej bierki oprócz skoczka ( błądzenie
+na grafie G jest łańcuchem nieokresowym wtedy i tylko wtedy, gdy G nie jest dwudzielny, w tym przypadku łatwiej jest patrzeć na definicje grafu dwudzielnego jako takiego, który, nie zawiera cykli nieparzystej długości, wtedy można sobie to wyobrazić i widać, że rzeczywiscie dla każdej innej bierki takie cykle będą istnieć. Biorąc pod uwagę te wszystkie fakty, można skorzystać z twierdzenia:
 
-b) Po drugie to, że w celu uzyskania średniego oczekiwanego czasu powrotu do stanu początkowego, można skorzystać z twierdzenia, że wynosi on 1 przez wartość rozkładu stacjonarnego w stanie dla, którego to liczymy.
+![Rozkład_stacjonarny_błądzenie](./article/twierdzenie_A.png)
 
-Po czasie stwierdziłem jednak, że chciałbym zobaczyć dlaczego oba zjawiska można w tak sprytny sposób wykorzystać i jaka matematyka za tym stoi.
+I w ten sposób doprowadzić do wyznaczenia rozkładu stacjonarnego w danym przypadku.
 
-a) Podpunkt a jest prawdą, ponieważ sytuację, z którą ma się doczynienia w przypaku mojego projektu można potraktować jako błądzenie klasyczne (spacer losowy) po grafie G bez wierzchołków izolowanych, w którym cząstka (bierka szachowa) przemieszcza się do jednego z sąsiadów wierzchołka (kwadratu na który może wykonać legalny ruch) z jednakowym prawdopodobieństwem (że tak jest ustaliliśmy już wcześniej). Wszystko znajduje idealne odzwierciedlenie w przypadku szachownicy i wędrującej po niej bierki. Temu procesowi odpowiada łańcuch Markowa o zbiorze stanów V(G) (64 kwadraty) gdzie ja dowolnej krawędzi ij, prawdopodbieństwo przejścia ze stanu i do j wynosi 1 przez stopień wierzchołka i (liczba kwadratów na które możemy wykonać legalny ruch z i).
+b) Dlaczego można w taki sposób policzyć średni czas powrotu do stanu
 
-Błądzenie na grafie G jest łańcuchem nieprzywiedlnym wtedy i tylko wtedy gdy G jest spójny. Błądzenie na grafie spójnym G jest łańcuchem niekresowym wtedy i tylko wtedy gdy G nie jest dwudzielny.
+Nie ma żadnego problemu z każdą bierką oprócz skoczka, ponieważ 
 
-W takim przypadku wektor ( deg(a1) / 2*E(G), deg(a2) / 2*E(G), ... ) jest rozkładem stacjonarnym dla błądzenia na grafie G.
-
-Dlatego w ten sposób, można szybko przejść od liczby możliwych bierek na polu do rozkładu stacjonarnego, ponieważ teraz traktujemy to po prostu w ten sposób (tak to jest zrealizowane w kodzie), że dla każdego pola bierzemy liczbę ruchów możliwych z tego pola (stopień wierzchołka) i dzielimy przez sumę wszystkich ruchów ze wszystkich pól (ta suma odpowiada 2 * E(G), ponieważ jeżeli możemy skoczyć z jednego pola na drugie to możemy z drugiego na pierwsze i w ten sposób podwójnie zliczamy, gdybym chciał obliczyć liczbę krawędzi w takim grafie to po prostu podzieliłbym tę sumę na dwa).
-
-W ten sposób, można wyznaczyć rozkład stacjonarny zamiast wykonywać rachunki na macierzy przejścia, która byłaby rozmiarów 64 na 64.
-
+Błądzenie
+na grafie G jest łańcuchem nieokresowym wtedy i tylko wtedy, gdy G nie jest dwudzielny
 http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp12_lancuchy_Markowa.pdf
 http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp13_lancuchy_Markowa_cd_opracowanie.pdf
 
