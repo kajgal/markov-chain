@@ -90,6 +90,10 @@ Aplikacja pozwala na ustawienie dowolnej bierki w dowolnym miejscu, sprawdzenie 
 ## Goniec
 W przypadku Gońca należy zwrócić uwagę, że jako przestrzeń stanów traktuje się 32 pola, po których goniec może się poruszać. W takim ujęciu wszystko działa w sposób analogiczny, a jako sumę gońców ze wszystkich pól bierzę się połowę.
 
+## Rozkład stacjonarny
+Rozkład stacjonarny to rozkład prawdopodbieństwa na przestrzeni stanów łańcuchu Markowa, po k krokach, który pozostanie taki sam po k + 1 krokach i wszystkich kolejnych.
+Tłumaczę to sobie w ten sposób, że jeśli do niego dotrzesz to już przy takim zostaniesz.
+
 ## Podłoże teoretyczne - mniej skrótowo, bardziej dowodowo
 a) Dlaczego można w tak prosty sposób przejść od liczby dozwolonych ruchów z pola do rozkładu stacjonarnego
 
@@ -102,22 +106,47 @@ I w ten sposób doprowadzić do wyznaczenia rozkładu stacjonarnego w danym przy
 
 b) Dlaczego można w taki sposób policzyć średni czas powrotu do stanu
 
-Nie ma żadnego problemu z każdą bierką oprócz skoczka, ponieważ 
+W celu odpowiedzenia na to pytanie warto zastanowić się głębiej nad tym z jakim łańcuchem dokładnie mamy do czynienia w przypadku tego problemu. Ustaliliśmy już, że:
 
-Błądzenie
-na grafie G jest łańcuchem nieokresowym wtedy i tylko wtedy, gdy G nie jest dwudzielny
-http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp12_lancuchy_Markowa.pdf
-http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp13_lancuchy_Markowa_cd_opracowanie.pdf
+- mamy tutaj przykład błądzenia klasycznego po grafie
+- łańcuch markowa jest jednorodny i skończony
+- łańcuch markowa odpowiadający temu procesowi będzie zawsze nieprzywiedlny, ponieważ wszystkie stany komunikują się ze sobą, a zatem możliwe jest przejście od każdego stanu do każdego innego (w przypadku Gońca naszą przestrzenią stanów jest 32 dostępnych dla niego pól i wszystko jest tak samo)
+- łańcuch markowa będzie również nieokresowy (niestety oprócz skoczka), ponieważ łatwo to można zoobrazować poprzez samą aplikację, że w przypadku każdej bierki możemy wrócić 2 lub w 3 ruchach niezależnie od stanu początkowego i powoduje to, że stany mają okres 1, a więc cały łańcuch jest nieokresowy
+- biorąc pod uwagę powyższe, w przypadku każdej bierki oprócz skoczka będziemy mieli styczność z łańcuchem ergodycznym, ponieważ łańcuch jest ergodyczny, gdy jest nieprzywiedlny i nieokresowy
+- skoro łańcuch będzie ergodyczny, możemy wykorzystać twierdzenie ergodyczne, który mówi nam, że taki łańcuch ma dokładnie jeden rozkład stacjonarny, a oprócz tego, to co najbardziej mnie interesuje w projekcie, średni czas powrotu do stanu początkowego w takim łańcuchu wynosi 1 podzielone przez wartość rozkładu stacjonarnego w tym stanie
+- zatem dla wszystkich bierek (król, hetman, goniec, wieża) wszystko jest jasne: są to łańcuchy ergodyczne, które mają dokładnie jeden rozkład stacjonarny, spoglądając na ich wędrówkę po szachownicy jako błądzenie klasyczne po grafie możemy policzyć w sprytny sposób rozkład stacjonarny, a mając rozkład stacjonarny możemy wykorzystać wzór, którym wyliczymy średni czas powrotu do stanu początkowego
 
-b) 
+## Co ze skoczkiem?
 
-Inspiracją dla stworzenia całego projektu jest filmik na który natknąłem się na YouTube:
+- biorąc pod uwagę wszystkie wcześniejsze informacje, możemy stwierdzić, że dla skoczka nie ma mowy o łańcuchu ergodycznym, ponieważ będzie on nieprzywiedlny, ale nie spełnia już warunku bycia nieokresowym, okres dla tego łańcucha będzie równy dokładnie 2
 
-https://www.youtube.com/watch?v=63HHmjlh794&t=605s
+JEDNAK
 
-umieszczony na kanale PBS Infinite Series
+- łańcucha markowa będzie zawsze nieredukowalny
+- 
+- łańcuch redukowalny to taki, w którym mamy jakieś stany po których możemy się poruszać tylko zaczynając od któregoś z nich, a oprócz tego znajdują się w tym łańcuchu inne stany
+- 
+- w tym przypadku łańcuch będzie nieredukowalny, ponieważ mamy jedną klasę komunikacji, czyli nie występują takie zamknięte "kręgi" - z każdego stanu można dotrzeć do każdego innego stanu w skończonej liczbie kroków
 
-Grafiki, które zostały wykorzystane w tym dokumencie pochodzą z powyższego materiału, który był punktem wyjścia dla całej wiedzy nabywanej dalej w celu zgłębienia zagadnienia.
+- istnieje twierdzenie mówiące, że: jeśli łańcuch jest nieredukowalny, jego rozkład stacjonarny istnieje wtedy i tylko wtedy, gdy wszystkie stany są rekurencyjne pozytywnie i w tym przypadku rozkład stacjonarny jest jedyny
+
+- kiedy łańcuch jest rekurencyjny: łańcuch jest rekurencyjny kiedy mamy pewność że startując z obojętnie, którego stanu kiedyś do niego powróci, a dokładniej rzecz biorąc, nie będzie takiej sytuacji, w której prawdopodobieństwo powrotu do początkowego stanu w n krokach spadnie do 0
+
+- każdy skończony, nieredukowalny łańcuch markowa jest pozytywnie rekurencyjny
+
+- w takim wypadku można zastosować wzór na średni czas nawrotu, jednak nie na podstawie twierdzenia ergodycznego, lecz faktu iż łańcuch jest nieredukowalny oraz wszystkie stany są rekurencyjne pozytywnie
+
+- pozytywna rekurencja to własnośći klasy komunikacji stanów, w tym przypadku klasa jest tylko jedna, a oprócz tego pozytywną rekurencję łańcucha dowodzi twierdzenie mówiące, że każdy nieredukowalny łańcuch Markowa ze skończoną liczbą stanów jest pozytywny rekurencyjnie
+
+- pozytywna rekurencja stanu sama w sobie mówi o tym, czy oczekiwany czas powrotu do stanu początkowego jest mniejszy od nieskończoności
+
+- jeśli łańcuch spełnia twierdzenie ergodyczne to rozkład stacjonarny oprócz tego, że jest jedyny to jest jednocześnie "limiting distribution" (rozkład asymptotyczny), który mówi o tym jak wygląda rozkład prawdopodobieństwa na przestrzeni stanów przy liczbie kroków dążącej do nieskończoności 
+
+Tłumaczę to sobie w ten sposób, że dotrzesz do niego ewentualnie jeśli będziesz wystarczająco długo próbować.
+
+- brak spełnialności twierdzenia ergodycznego nie wyklucza zastosowania wzoru na średni czas nawrotu jako, że warunkiem do tego jest aby łańcuch był nieredukowalny i pozytywnie rekurencyjny
+
+## Podsumowanie
 
 Materiały i źródła pomocnicze:
 
@@ -131,4 +160,24 @@ http://wazniak.mimuw.edu.pl/index.php?title=Rachunek_prawdopodobie%C5%84stwa_i_s
 
 http://statystyka.rezolwenta.eu.org/Materialy/Markowa.pdf
 
+http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp12_lancuchy_Markowa.pdf
+
+http://antoniuk.home.amu.edu.pl/WRP/2019_lato/wrp13_lancuchy_Markowa_cd_opracowanie.pdf
+
+https://pdf.sciencedirectassets.com/271586/1-s2.0-S0024379510X00167/1-s2.0-S0024379510003290/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIHWaC5PKQDpMy1XteyGPb7rN8LEIF0dPs1apxSvqLMkoAiEA6zhzJowwlC3iH7Rk7XGokkp9HqF6XyfOz8U%2FctZ%2BqM4q%2BgMIWxAEGgwwNTkwMDM1NDY4NjUiDMVDRJXBcHg5B7DqHyrXA6F9NFTkH7O%2FcNrWsPjemciD1dW2SfXJHepAKf%2FZviyjWKq5oQbCQyGoXe%2FZQR3VSOp8cO7JaymGyWHYfmORLs9XGZuSnUEm3Il214dmD%2F1WAlHsPT8X4s9n6Rc3eeWJ3g%2B98B3bEr2i4o1%2FVba8xADfV1bUz5dgn%2Fm3%2BHVo%2F5WJilO%2ByO%2FwYvWRGQt%2F6YnQloNhCkR9ZRK4gMNiFh3TNBT90dWCH39XcMY2cAk7oNVID5mYWoFYnYe4jetoZUO43YKK3fNa2eaQap3FShl45BruqR2weBZTu50XnTMKD5xLfg8w3yKFeTuk4hlAdvl%2FN3%2FUQoaAZtuoipy7eT81T9mkZbxTQAuXjosHkJONiTXuoXN8nscd3WFthVKU8aUkv9Ro4q5X%2Ba6AnU4Y7oztX076PHJrB7ejkvZSlsrPClMRHyf2JiLw4PtThk6EGizWnsV0Tcl9YV8DsNTCCa1FAoadEx%2FdYx87wjR6ODCJMCT4%2BBf6fRJlt%2BGWBC%2FXMOcSs0HJ4UUx5UmmdU%2FiMKRA3ulGOQWjB64DJK1oIq61HDB3XH1Wb1a3d%2F7qUmjRkK2xuCjyNZk1kHQ%2F77aCBGrcBWM%2BnAkhSSp8EYk0b2Qn7Xm5qiOZtuj6lTCBxKyGBjqlAWM0RaBGfAtYgRCp45UmfFeh6DkcgSJHIysxz8RLmUUqufCkfcL7VTV28GiIwahEPVhddI27IK1V3vtmk6sIanlXkSmoVJ6u%2BSD6CMZp2ErrKENtZK3WMN9SSncXhl24VA%2BCjL4gmSHIO3nrEA2qg0Xcf6ufkmlL4nFAnuq5cBUUk4XkUKEUeMiAjaL8HlV6ySI9xdvMgodXw3qvoflnVf%2F2WWZJaw%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210617T111716Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYYJEKVGFK%2F20210617%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=5a319c99ed7ab9f9b4d06d06fb25f15f5f25952b6f6a4248d3a232b4b587245c&hash=ec022cf5c29b327eed6ab2effd8bd16b9247e356277d38aa53daac9db2af45ce&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0024379510003290&tid=spdf-d2275fdd-ab26-4a7f-a198-94d1d10c0eb4&sid=8276e8d27855b34f951ac135dd308b47551dgxrqb&type=client
+
+https://www.ma.imperial.ac.uk/~ejm/M3S4/NOTES3.pdf
+
+http://www.columbia.edu/~ww2040/4701Sum07/4701-06-Notes-MCII.pdf
+
+https://mast.queensu.ca/~stat455/lecturenotes/set3.pdf
+
 Materiały z wykładu
+
+Inspiracją dla stworzenia całego projektu jest filmik na który natknąłem się na YouTube:
+
+https://www.youtube.com/watch?v=63HHmjlh794&t=605s
+
+umieszczony na kanale PBS Infinite Series
+
+Grafiki, które zostały wykorzystane w tym dokumencie pochodzą z powyższego materiału, który był punktem wyjścia dla całej wiedzy nabywanej dalej w celu zgłębienia zagadnienia.
