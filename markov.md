@@ -136,7 +136,7 @@ JEDNAK
 
 - istnieje twierdzenie mówiące, że: jeśli łańcuch jest nieredukowalny, jego rozkład stacjonarny istnieje wtedy i tylko wtedy, gdy wszystkie stany są rekurencyjne pozytywnie i w tym przypadku rozkład stacjonarny jest jedyny
 
-![Twierdzenie o unikalności rozkładu](./article/theorem 1.png)
+![Twierdzenie o unikalności rozkładu](./article/theorem1.png)
 
 - kiedy łańcuch jest rekurencyjny: łańcuch jest rekurencyjny kiedy mamy pewność że startując z obojętnie, którego stanu kiedyś do niego powróci, a dokładniej rzecz biorąc, nie będzie takiej sytuacji, w której prawdopodobieństwo powrotu do początkowego stanu w n krokach spadnie do 0
 
@@ -148,7 +148,7 @@ JEDNAK
 
 - pozytywna rekurencja to własnośći klasy komunikacji stanów, w tym przypadku klasa jest tylko jedna, a oprócz tego pozytywną rekurencję łańcucha dowodzi twierdzenie mówiące, że każdy nieredukowalny łańcuch Markowa ze skończoną liczbą stanów jest pozytywny rekurencyjnie
 
-![Twierdzenie o pozytywnej rekurencji stanów](./article/theorem 2.png)
+![Twierdzenie o pozytywnej rekurencji stanów](./article/theorem2.png)
 
 - pozytywna rekurencja stanu sama w sobie mówi o tym, czy oczekiwany czas powrotu do stanu początkowego jest mniejszy od nieskończoności
 
