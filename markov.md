@@ -109,11 +109,17 @@ b) Dlaczego można w taki sposób policzyć średni czas powrotu do stanu
 W celu odpowiedzenia na to pytanie warto zastanowić się głębiej nad tym z jakim łańcuchem dokładnie mamy do czynienia w przypadku tego problemu. Ustaliliśmy już, że:
 
 - mamy tutaj przykład błądzenia klasycznego po grafie
+
 - łańcuch markowa jest jednorodny i skończony
+
 - łańcuch markowa odpowiadający temu procesowi będzie zawsze nieprzywiedlny, ponieważ wszystkie stany komunikują się ze sobą, a zatem możliwe jest przejście od każdego stanu do każdego innego (w przypadku Gońca naszą przestrzenią stanów jest 32 dostępnych dla niego pól i wszystko jest tak samo)
+
 - łańcuch markowa będzie również nieokresowy (niestety oprócz skoczka), ponieważ łatwo to można zoobrazować poprzez samą aplikację, że w przypadku każdej bierki możemy wrócić 2 lub w 3 ruchach niezależnie od stanu początkowego i powoduje to, że stany mają okres 1, a więc cały łańcuch jest nieokresowy
+
 - biorąc pod uwagę powyższe, w przypadku każdej bierki oprócz skoczka będziemy mieli styczność z łańcuchem ergodycznym, ponieważ łańcuch jest ergodyczny, gdy jest nieprzywiedlny i nieokresowy
+
 - skoro łańcuch będzie ergodyczny, możemy wykorzystać twierdzenie ergodyczne, który mówi nam, że taki łańcuch ma dokładnie jeden rozkład stacjonarny, a oprócz tego, to co najbardziej mnie interesuje w projekcie, średni czas powrotu do stanu początkowego w takim łańcuchu wynosi 1 podzielone przez wartość rozkładu stacjonarnego w tym stanie
+
 - zatem dla wszystkich bierek (król, hetman, goniec, wieża) wszystko jest jasne: są to łańcuchy ergodyczne, które mają dokładnie jeden rozkład stacjonarny, spoglądając na ich wędrówkę po szachownicy jako błądzenie klasyczne po grafie możemy policzyć w sprytny sposób rozkład stacjonarny, a mając rozkład stacjonarny możemy wykorzystać wzór, którym wyliczymy średni czas powrotu do stanu początkowego
 
 ## Co ze skoczkiem?
@@ -123,9 +129,9 @@ W celu odpowiedzenia na to pytanie warto zastanowić się głębiej nad tym z ja
 JEDNAK
 
 - łańcucha markowa będzie zawsze nieredukowalny
-- 
+ 
 - łańcuch redukowalny to taki, w którym mamy jakieś stany po których możemy się poruszać tylko zaczynając od któregoś z nich, a oprócz tego znajdują się w tym łańcuchu inne stany
-- 
+
 - w tym przypadku łańcuch będzie nieredukowalny, ponieważ mamy jedną klasę komunikacji, czyli nie występują takie zamknięte "kręgi" - z każdego stanu można dotrzeć do każdego innego stanu w skończonej liczbie kroków
 
 - istnieje twierdzenie mówiące, że: jeśli łańcuch jest nieredukowalny, jego rozkład stacjonarny istnieje wtedy i tylko wtedy, gdy wszystkie stany są rekurencyjne pozytywnie i w tym przypadku rozkład stacjonarny jest jedyny
