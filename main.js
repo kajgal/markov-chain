@@ -112,7 +112,7 @@ function startSimulation() {
     }
     
     if(simulationWorking) {
-        alert("You cannot start another simulation while one is active");
+        alert("You cannot start another simulation while one is active! Clear the board first");
         return;
     }
     console.log(iterationsInput.value);
