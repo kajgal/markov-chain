@@ -113,7 +113,6 @@ function startSimulation() {
     
     if(simulationWorking) {
         alert("You cannot start another simulation while one is active");
-        window.location.href = window.location.href;
         return;
     }
     console.log(iterationsInput.value);
