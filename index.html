@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/chessboard-1.0.0.min.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
+    
     <script src="https://kit.fontawesome.com/a30f59a560.js" crossorigin="anonymous"></script>
     <link rel="stylesheet"
       href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
@@ -23,21 +24,39 @@
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
             integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
             crossorigin="anonymous"></script>
-
+    <script src="./lib/Ratio-0.4.1.js"></script>
     <script src="main.js" defer ></script>
 </head>
 <body>
     <div id="container">
         <h1 id="page-title">Markov chains</h1>
 
-        <div id="board" style="width: 1400px;"></div>
+        <div id="board" style="width: 500px;"></div>
 
-        <div id="buttons-section">
-            <button id="number-of-moves" class="button button-wayra button-inverted">Number of moves</button>
-            <button id="stationary-distribution" class="button button-wayra">Stationary distribution</button>
-            <button id="start-simulation" class="button button-wayra">Start simulation</button>
+        <div id="bottom-panel">
+            <div id="buttons-section">
+                <button id="clear-board" class="button button-wayra">Clear</button>
+                <button id="number-of-moves" class="button button-wayra button-inverted">Number of moves</button>
+                <button id="stationary-distribution" class="button button-wayra">Stationary distribution</button>
+                <button id="start-simulation" class="button button-wayra">Start simulation</button>
+            </div>
+            <div id="simulation-section">
+                <h3 id="simulation-header">Simulation</h3>
+                <div class="simulation-iterations-box">
+                    <label class="switch">
+                        <input id="iterative-simulation" type="checkbox" onclick="iterativeSimulation();">
+                        <span class="boolean-slider round"></span>
+                    </label>
+                    <input id="iterations-number" type="number" placeholder="Iterations">
+                </div>
+                <h6 id="simulation-seconds"></h6>
+                <input type="range" min="1" max="5000" value="2500" class="slider" id="simulation-timer">
+                <div id="simulation-info">
+                    <h4 id="simulation-moves" class="sim-info">Moves: 0</h4>
+                    <h4 id="simulation-average" class="sim-info">Expected: 0</h4>
+                </div>
+            </div>
         </div>
-
         <h5 id="footer-credentials">designed and developed by Kajetan Gałęziowski - kajgal@st.amu.edu.pl  <i class="fas fa-envelope"></i> </h1>
     </div>
 </body>

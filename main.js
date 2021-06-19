@@ -1,3 +1,5 @@
+console.log("[ HELLO! ]")
+
 // board initial configuration
 const board = Chessboard('board', {
     draggable: true,
@@ -8,10 +10,68 @@ const board = Chessboard('board', {
     onMoveEnd : onMoveEnd
 })
 
-// visu
+// simulation - speed - slider
+const slider = document.getElementById('simulation-timer')
+// output is like "Move delay: [value] seconds."
+const output = document.getElementById('simulation-seconds')
+// output default value 
+output.innerHTML = `Move delay: ${slider.value} miliseconds`
+
+let simulationDelay = slider.value
+
+slider.oninput = function() {
+    output.innerHTML = `Move delay: ${this.value} miliseconds`;
+    simulationDelay = this.value
+}
+
+let boardCleared = true;
+
+let simulationWorking = false;
+
+const toggleBtn = document.getElementById('iterative-simulation');
+
+const iterationsInput = document.getElementById("iterations-number");
+
+const movesOutput = document.getElementById('simulation-moves');
+
+const simulationHeader = document.getElementById('simulation-header');
+
+let iterator = 0
+
+function iterativeSimulation() {
+
+    if(simulationWorking) {
+
+        alert("You are not allowed to change mode while simulation is active.")
+        return;
+    }
+    else {
+        if(!toggleBtn.checked) {
+            iterationsInput.style.display = "none";
+            iterationsInput.value = ""
+            //
+            simulationHeader.innerHTML = "Simulation"
+            simulationHeader.style.fontSize = "30px";
+            movesOutput.innerHTML = `Moves: 0`
+            
+        }
+        else {
+            iterationsInput.style.display = "block";
+
+            // get input from user
+            let iterationsCount = iterationsInput.value;
+
+            console.log(iterationsCount);
+
+            simulationHeader.style.fontSize = "18px";
+            simulationHeader.innerHTML = `AVG Moves: 0 | Iteration: 0`
+            movesOutput.innerHTML = `Moves: 0`
+        }
+    }
+}
 
 // whole chessboard
-const chessboard = document.getElementById('chessboard-63f37');
+const chessboard = document.getElementsByClassName('board-b72b1')[0]
 
 // all rows of chessboard
 const chessboardRows = document.getElementsByClassName('row-5277c')
@@ -31,47 +91,65 @@ for(let i = 0; i < 64; i++) {
     }
 
     divChessrow.push(chessboardSquares[i])
+    chessboardSquares[i].innerHTML = "";
+    chessboardSquares[i].style.display = "flex";
 
     if(i % 8 == 7) {
         divChessboard.push(divChessrow)
     }
 }
 
-console.log(divChessboard)
-
-/*  TO DO
-- fade in and fade out bottom pieces
-- replace bottom pieces with text informating about that u have to move piece away to make other pieces appear again
-*/
-
-/* THREE BUTTONS
-- NUMBER OF MOVES FROM THAT STATE
-- COUNT STATIONARY DISTRIBUTION
-- START SIMULATION
-*/
-
 const startSimulationBtn = document.getElementById('start-simulation');
 
 startSimulationBtn.addEventListener( 'click', startSimulation);
 
 function startSimulation() {
+
+    if(!boardCleared) {
+        alert("Clear the board before starting simulation!");
+        window.location.href = window.location.href;
+        return;
+    }
+    
+    if(simulationWorking) {
+        alert("You cannot start another simulation while one is active");
+        window.location.href = window.location.href;
+        return;
+    }
+    console.log(iterationsInput.value);
+    console.log(Number.isInteger(iterationsInput.value))
+    if(iterationsInput.value < 0 || !(iterationsInput.value % 1 == 0)) {
+        alert("Your iterations input is invalid! It should be integer number.");
+        return;
+    }
+
     // check if piece is placed on chessboard
     if(initialPiecePosition != "OUT_OF_BOARD") {
         initSimulation()
+        simulationWorking = true;
+        toggleBtn.disabled = true;
     } else {
-        alert("PUT PIECE ON THE BOARD!");
+        alert("Please put piece on the board to see result!");
     }
 
     // at simulation start, basically I have to trigger onMoveEnd so it requires to manually move in RANDOM way particular piece
 }
 
+let movesCounter = 0;
+
+clear();
+
 function initSimulation() {
     const initialBoardPosition = fenToPieceCoordinates( Chessboard.objToFen(boardPosition) );
+
     executeRandomMove(initialBoardPosition, pieceType)
 }
 
 // remove top pieces from DOM
 const topPieces = document.querySelector('.spare-pieces-top-4028b')
+
+// remove numeric from board
+const leftsideNumeric = document.getElementsByClassName('notation-322f9')
 
 // remove bottom pawn from DOM
 const bottomPawn = document.querySelector( "[data-piece=wP]")
@@ -95,17 +173,92 @@ let boardPosition = null
 
 let initialPiecePosition = "OUT_OF_BOARD";
 
-function onMoveEnd(oldPos, newPos) {
+const numberOfMovesBtn = document.getElementById('number-of-moves');
+
+numberOfMovesBtn.addEventListener( 'click', numberOfMoves)
+
+function numberOfMoves() {
+
+    if(simulationWorking) {
+        alert("You cannot do this while simulation is working! Clear the board first.");
+        return;
+    }
+
+    clear()
+    if(initialPiecePosition != "OUT_OF_BOARD") {
+        const numberOfMoves = countNumberOfMoves(pieceType)
+        diagonalAnimation(numberOfMoves, 0);
+        boardCleared = false;
+    } else {
+        alert("Please put piece on the board to see result!");
+    }
+}
+
+const stationaryDistributionBtn = document.getElementById('stationary-distribution');
+
+stationaryDistributionBtn.addEventListener( 'click', stationaryDistribution)
+
+function stationaryDistribution() {
+
+    if(simulationWorking) {
+        alert("You cannot do this while simulation is working! Clear the board first.");
+        return;
+    }
+
+    clear()
+    if(initialPiecePosition != "OUT_OF_BOARD") {
+        const boardOfFraction = countStationaryDistribution(pieceType)
+        diagonalAnimation(boardOfFraction, 1);
+        boardCleared = false;
+    } else {
+        alert("Please put piece on the board to see result!")
+    }
+}
+
+const clearBtn = document.getElementById('clear-board');
+
+clearBtn.addEventListener('click', clearBoard);
+
+function clearBoard() {
+    window.location.reload(false);
+}
+
+
+//////////////////
+let currentPieceCoordinates;
+
+async function onMoveEnd(oldPos, newPos) {
     
     const afterMovePosition = fenToPieceCoordinates( Chessboard.objToFen(newPos) );
 
     if(initialPiecePosition != afterMovePosition) {
+        await sleep(simulationDelay)
         executeRandomMove(afterMovePosition, pieceType);
     } else {
-        console.log("Simulation end!");
+
+        // check if iterative mode is turned on
+        if(toggleBtn.checked && iterator < iterationsInput.value) {
+
+            console.log(`FINISHED ${iterator + 1} ITERATION`)
+            
+            iterator = iterator + 1;
+
+            let avgMoves = Math.round(movesCounter / iterator);
+
+            simulationHeader.innerHTML = `AVG Moves: ${avgMoves} | Iteration: ${iterator}`
+
+            initSimulation();
+        }
+        // one simulation 
+        else {
+            console.log("[ SIMULATION END ]")
+            simulationWorking = false;
+            toggleBtn.disabled = false;
+        }
     }
 }
 
+// just moving piece
 function move(move) {
     board.move(move)
 }
@@ -116,8 +269,6 @@ function fenToPieceCoordinates(fenString) {
     let pieceRow = 0;
     const chessRows = fenString.split('/');
 
-    console.log(chessRows)
-
     // look for element different than 8 which is empty row
     for(row of chessRows) {
         if(row != "8") {
@@ -126,8 +277,6 @@ function fenToPieceCoordinates(fenString) {
         }
         pieceRow = pieceRow + 1;
     }
-
-    console.log(pieceInNotation)
 
     let pieceColumn;
     // check if its 3 chars long like 5N2
@@ -147,12 +296,11 @@ function fenToPieceCoordinates(fenString) {
 
     const pieceCoordinates = [pieceRow, pieceColumn]
 
-    console.log(pieceCoordinates)
 
     return coordinatesToNotation(pieceCoordinates)
 }
 
-// return like f2, e4 etc.
+// function that returns position in notation from two coordinates [Y, X] - returns like f2, e4 etc.
 function coordinatesToNotation(pieceCoordinates) {
     const number = (8 - pieceCoordinates[0])
     const letter = numberToNotation(pieceCoordinates[1])
@@ -169,6 +317,8 @@ let pieceType;
 // if one piece lands on board, rest disappears
 function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
+    removeHighlightAfterMove()
+
     boardPosition = newPos
     
     // allows only one piece to be dropped on chessboard - fires only at start
@@ -176,15 +326,28 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
         initialPiecePosition = target;
         bottomPiecesParentNode.removeChild(bottomPieces)
         boardBlocked = true
-
+        clearBtn.style.display = 'block';
 
         // piece returns two characters, first is w or b (white/black) and second is piece K/Q/R/B/N/P so I take only second character for piece type
         pieceType = piece.charAt(1);
+
+        //
+        let notation = Object.keys(newPos)[0]
+        let coordinates = notationToCoordinates(notation)
+        higlightSquareWithPiece(coordinates[0], coordinates[1])
+
+        countAverageMovesToReturn(pieceType, notation)
     }
 
     // updates piece position if user moves piece after dragging on chessboard before starting simulation
     if(boardBlocked && target !== 'offboard') {
         initialPiecePosition = target;
+
+        let notation = Object.keys(newPos)[0]
+        let coordinates = notationToCoordinates(notation)
+        higlightSquareWithPiece(coordinates[0], coordinates[1])
+
+        countAverageMovesToReturn(pieceType, notation)
     }
 
     // allows user to drag piece on chess board when chessboard is empty
@@ -195,20 +358,50 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
         // clear pieceType if there is no piece on chessboard
         pieceType = null;
+
+        clearBtn.style.display = 'none';
+    }
+
+}
+
+
+function higlightSquareWithPiece(yCord, xCord) {
+    divChessboard[yCord][xCord].style.boxSizing = "border-box";
+    divChessboard[yCord][xCord].style.backgroundColor = "#C0392B";
+    highlightedSquare = divChessboard[yCord][xCord];
+}
+
+function removeHighlightAfterMove() {
+    if(highlightedSquare != null) {
+        highlightedSquare.style.backgroundColor = "";
     }
 }
+
+// refresh output with number of moves 
+function refreshMoves(passedMoves=-1) {
+    movesCounter += 1;
+
+    if(passedMoves != -1) {
+        movesCounter = passedMoves
+    }
+    movesOutput.innerHTML = `Moves: ${movesCounter}`
+}
+
 //
 
 function executeRandomMove(piecePositionNotation, pieceType) {
 
+    refreshMoves()
+
+    if(highlightedSquare != null) {
+        removeHighlight()
+    }
+
     // piecePosition is like g3, e2 so I need to get it's coordinates
     const piecePositionCoordinates = notationToCoordinates(piecePositionNotation)
-    console.log(piecePositionCoordinates)
 
     // get all legal moves for particular piece depending on its type
     const legalMoves = getLegalMoves(pieceType);
-
-    console.log(legalMoves)
 
     let yCord = piecePositionCoordinates[0];
     let xCord = piecePositionCoordinates[1];
@@ -222,15 +415,12 @@ function executeRandomMove(piecePositionNotation, pieceType) {
         yMoveChange = moveVector[0]
         xMoveChange = moveVector[1]
 
-        console.log(moveDirection)
-
         if(yCord + yMoveChange >= 0 
             && yCord + yMoveChange <= 7
                 && xCord + xMoveChange >= 0 
                     && xCord + xMoveChange <= 7) {
             
             possibleMoves.push(moveVector)
-            console.log(moveVector)
         }
     }
     
@@ -241,6 +431,8 @@ function executeRandomMove(piecePositionNotation, pieceType) {
     const notationAfterMove = coordinatesToNotation(coordinatesAfterMove)
 
     const nextMove = `${piecePositionNotation}-${notationAfterMove}`
+
+    highlightOnMove(yCord + randomMove[0], xCord + randomMove[1])
 
     board.move(nextMove)
 }
@@ -256,6 +448,169 @@ function notationToCoordinates(notationPosition) {
 
     return pieceCoordinates
 }
+
+let highlightedSquare
+
+function highlightOnMove(yCord, xCord) {
+    divChessboard[yCord][xCord].style.boxSizing = "border-box";
+    divChessboard[yCord][xCord].style.border = "2px solid yellow";
+    highlightedSquare = divChessboard[yCord][xCord];
+}
+
+function removeHighlight() {
+    highlightedSquare.style.border = "";
+}
+
+// function that animates diagonal showing up values 
+async function diagonalAnimation(itemsArray, mode) {
+
+    for(let i = 0; i < 15; i++) {
+        for(let j = 0; j <= i; j++) {
+            let k = i - j;
+            if(k < 8 && j < 8) {
+                // [k][j]
+                let textPopOut;
+                // mode = 0 is for number of moves
+                divChessboard[k][j].style.boxSizing = "border-box"
+                if(mode == 0) {
+                    textPopOut = `${itemsArray[k][j]}`
+
+                }
+                else {
+                    textPopOut = `<sup>${itemsArray[k][j].split("/")[0]}</sup><span>&frasl;</span><sub>${itemsArray[k][j].split("/")[1]}</sub>`;
+                }
+                divChessboard[k][j].innerHTML = textPopOut
+                divChessboard[k][j].style.color = "black";
+                await sleep(100)
+            }
+        }
+    }
+}
+
+//* MATH *//
+
+// function that counts number of moves for all squares
+function countNumberOfMoves(pieceType) {
+
+    let movesBoard = new Array(8)
+    let currentPosition
+    const legalMoves = getLegalMoves(pieceType)
+    
+    for(let i = 0; i < 8; i++) {
+        movesBoard[i] = new Array(8)
+        for(let j = 0; j < 8; j++) {
+            currentPosition = [i, j]
+            movesBoard[i][j] = movesFromSquare(currentPosition, legalMoves)
+        }
+    }
+
+    // logs for F12
+    console.log("[NUMBER OF MOVES]");
+    console.log(`Number of moves array for ${pieceType} is: `);
+    console.log(movesBoard);
+
+    return movesBoard
+}
+
+// function that returns possible moves from specified square for specified piece
+function movesFromSquare(currentPosition, legalMoves) {
+
+    let possibleMoves = 0
+
+    const yCord = currentPosition[0]
+    const xCord = currentPosition[1]
+
+    for(const [moveDirection, moveVector] of Object.entries(legalMoves)) {
+        yMoveChange = moveVector[0]
+        xMoveChange = moveVector[1]
+
+        if(yCord + yMoveChange >= 0 
+            && yCord + yMoveChange <= 7
+                && xCord + xMoveChange >= 0 
+                    && xCord + xMoveChange <= 7) {
+            
+            possibleMoves = possibleMoves + 1;
+        }
+    }
+
+    return possibleMoves
+}
+
+// function that counts stationary distribution for specified situation
+function countStationaryDistribution(pieceType, roundTo = 18) {
+    // anyways i need possibleMoves array
+    let possibleMoves = countNumberOfMoves(pieceType)
+    
+    console.log(possibleMoves)
+
+    // calculate sum of possibleMoves (each square and possible moves from that square)
+    let sumOfAllMoves = 0
+
+    possibleMoves.forEach( row => {
+        sumOfAllMoves += row.reduce( function(previousValue, currentValue) {
+            return previousValue + currentValue;
+        })
+    });
+
+    if(pieceType == 'B') {
+        sumOfAllMoves = sumOfAllMoves / 2;
+    }
+
+    // calculate array of fractions
+    // calculate array of float values
+    let boardOfFractions = []
+    let boardOfFloatFractions = []
+    let rowOfFractions
+    let rowOfFloatFractions;
+    let fraction;
+    let floatFraction;
+
+    possibleMoves.forEach( row => {
+        rowOfFractions = []
+        rowOfFloatFractions = []
+        row.forEach( squareMoves => {
+            fraction = Ratio(squareMoves, sumOfAllMoves).simplify().toString();
+            floatFraction = parseFloat((squareMoves / sumOfAllMoves).toFixed(roundTo))
+            rowOfFractions.push(fraction)
+            rowOfFloatFractions.push(floatFraction)
+        });
+        boardOfFractions.push(rowOfFractions)
+        boardOfFloatFractions.push(rowOfFloatFractions)
+    });
+
+    // logs for F12
+    console.log("[STATIONARY DISTRIBUTION]");
+    console.log(`Stationary distribution array in fractions: `);
+    console.log(boardOfFractions);
+    console.log(`Stationary distribution array in floats: `);
+    console.log(boardOfFloatFractions);
+    console.log(` Sum of all possible moves from all squares: ${sumOfAllMoves}`);
+
+    return boardOfFractions;
+}
+
+// function counts average number of moves of piece to return to starting state
+function countAverageMovesToReturn(pieceType, notation) {
+
+    let coordinates = notationToCoordinates(notation)
+
+    const stationaryDistribution = countStationaryDistribution(pieceType)
+
+    const distributionAtState = stationaryDistribution[coordinates[0]][coordinates[1]]
+
+    const averageMovesToReturn = 1 / eval(distributionAtState)
+
+    const logText = `Stationary distribution for ${pieceType} at ${notation} is ${distributionAtState}. Average number of moves to return to that state is ${averageMovesToReturn}`
+
+    // logs for F12
+    console.log("[AVERAGE NUMBER OF MOVES]")
+    console.log(logText)
+
+    // refresh on page
+    setAverageValue(averageMovesToReturn);
+}
+
+/* CHESS UTILS */
 
 // legalMoves is object of arrays which says how coordinates of piece will change on board, if board is 2dim array [y][x] ---> [rows][columns]
 // moves up decreases y value, moves down increases y value
@@ -316,6 +671,7 @@ function getLegalMoves(pieceType) {
     return legalMoves
 }
 
+// function to generate all possible vectors of move for bishop
 function bishopVectors(legalMoves) {
     for(let i = 1; i < 8; i++) {
         // generate vectors like [-1, -1], [-2, -2]
@@ -334,6 +690,7 @@ function bishopVectors(legalMoves) {
     return legalMoves
 }
 
+// function to generate all possible vectors of move for rook
 function rookVectors(legalMoves) {
     for(let i = 1; i < 8; i++) {
         // generate vectors like [1, 0], [2, 0]
@@ -352,10 +709,12 @@ function rookVectors(legalMoves) {
     return legalMoves
 }
 
+// function choose random move from all possible legal moves at particular moment
 function getRandomMove(possibleMoves) {
     return possibleMoves[ Math.floor(Math.random() * possibleMoves.length) ];
 }
 
+// function to get notation letter from array index
 function numberToNotation(number) {
     switch(number) {
         case 0:
@@ -379,6 +738,7 @@ function numberToNotation(number) {
     }
 }
 
+// function to get index of array from notation letter
 function notationToNumber(letter) {
     switch(letter) {
         case 'a':
@@ -400,4 +760,31 @@ function notationToNumber(letter) {
         default:
             return 'ERROR';
     }
+}
+
+/* UTILS */
+
+// helper function for delay in simulation
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function clear() {
+    for(row of divChessboard) {
+        for(div of row) {
+            div.style.border = "";
+            div.style.backgroundColor = "";
+            div.style.innerHTML = "";
+        }
+    }
+    // set average moves to 0
+    setAverageValue(0);
+    refreshMoves(0);
+}
+
+// function sets average number of moves after piece is placed on square
+function setAverageValue(averageNumber) {
+    const averageOutput = document.getElementById('simulation-average');
+
+    averageOutput.innerHTML = `Expected: ${Math.ceil(averageNumber)}`;
 }
